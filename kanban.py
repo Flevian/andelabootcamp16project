@@ -18,7 +18,8 @@ class Kanban():
         new_task = KanbanDb()
         new_task.task_name = taskName
         new_task.task_status = "TODO"
-        new_task.completion_time = None 
+        new_task.start_time = None
+        new_task.task_duration = None 
         self.session.add(new_task)
         self.session.commit()
 
@@ -32,7 +33,7 @@ class Kanban():
     def move_todo_task_to_doing(self, task_id ):
         """Changing the status of todo task to doing"""
         start_time = datetime.now()
-        self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "TODO").update({"task_status": "DOING", "completion_time": start_time})
+        self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "TODO").update({"task_status": "DOING", "start_time": start_time})
         self.session.commit() 
 
     def view_tasks_doing(self):
@@ -40,24 +41,23 @@ class Kanban():
         print("==========Doing tasks list=======")
         doing_tasks= self.session.query(KanbanDb).filter(KanbanDb.task_status == "DOING")
         for task in doing_tasks:
-            doing_task_time_taken = datetime.now()  - task.completion_time
+            doing_task_time_taken = datetime.now()  - task.start_time
             print (str(task.id) + "\t" + task.task_name + "\t" + str(doing_task_time_taken))
 
     def move_doing_task_to_done(self, task_id):
         """Changing the status of doing task to done"""  
         done_task = self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING")
-        start_time = done_task.completion_time
-        done_task.finish_time = datetime.now() -start_time
-        done_task.task_status = "Done"
-        self.session.update(done_task)
-        self.session.commit()
+        for task in done_task:
+            finish_time = str(datetime.now() - task.start_time)
+            self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING").update({"task_status": "DONE", "task_duration": finish_time })
+            self.session.commit()                        
 
     def view_tasks_done(self):
         """View a list of all Done tasks"""
         print("==========Done tasks list=======")
         done_tasks = self.session.query (KanbanDb).filter(KanbanDb.task_status == "DONE") # Get a list of all done tasks
         for task in done_tasks:
-            print (str(task.id) + "\t" + task.task_name + "\t" + task.completion_time)
+            print (str(task.id) + "\t" + task.task_name + "\t" + task.task_duration)
 
     def view_all_tasks(self):
         """View a list of all Doing tasks"""
