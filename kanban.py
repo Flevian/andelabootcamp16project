@@ -1,6 +1,8 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, DateTime
 from sqlalchemy.orm import sessionmaker 
-from kanbanDb import KanbanDb, Base 
+from kanbanDb import KanbanDb, Base
+from tabulate import tabulate 
+from datetime import datetime
 
 class Kanban():
     """KanBan is a console application that is used to manage to-do tasks using the KanBan way of organizing todo into 3 sections: todo, doing, done. The app also tracks the time taken on a particular task and displays each task in the doing and done section with the time-taken so far on the task."""
@@ -16,20 +18,21 @@ class Kanban():
         new_task = KanbanDb()
         new_task.task_name = taskName
         new_task.task_status = "TODO"
-        new_task.completion_time = 0
+        new_task.completion_time = None 
         self.session.add(new_task)
         self.session.commit()
 
     def view_tasks_todo(self):
         """View a list of all ToDo tasks"""
         print("==========Todo tasks list=======")
-        todo_tasks= self.session.query(KanbanDb).filter(KanbanDb.task_status == "TODO")
+        todo_tasks = self.session.query(KanbanDb).filter(KanbanDb.task_status == "TODO")
         for task in todo_tasks:
-            print (str(task.id) + "\t" + task.task_name)
+            print (str(task.id) + "\t" + task.task_name )
 
     def move_todo_task_to_doing(self, task_id ):
         """Changing the status of todo task to doing"""
-        self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "TODO").update({'task_status': "DOING"})
+        start_time = datetime.now()
+        self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "TODO").update({"task_status": "DOING", "completion_time": start_time})
         self.session.commit() 
 
     def view_tasks_doing(self):
@@ -37,11 +40,16 @@ class Kanban():
         print("==========Doing tasks list=======")
         doing_tasks= self.session.query(KanbanDb).filter(KanbanDb.task_status == "DOING")
         for task in doing_tasks:
-            print (str(task.id) + "\t" + task.task_name)
+            doing_task_time_taken = datetime.now()  - task.completion_time
+            print (str(task.id) + "\t" + task.task_name + "\t" + str(doing_task_time_taken))
 
     def move_doing_task_to_done(self, task_id):
-        """Changing the status of doing task to done"""
-        self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING").update({'task_status': "DONE"})
+        """Changing the status of doing task to done"""  
+        done_task = self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING")
+        start_time = done_task.completion_time
+        done_task.finish_time = datetime.now() -start_time
+        done_task.task_status = "Done"
+        self.session.update(done_task)
         self.session.commit()
 
     def view_tasks_done(self):
@@ -49,8 +57,7 @@ class Kanban():
         print("==========Done tasks list=======")
         done_tasks = self.session.query (KanbanDb).filter(KanbanDb.task_status == "DONE") # Get a list of all done tasks
         for task in done_tasks:
-            #task.completion_time = current_time - task.completion_time
-            print (str(task.id) + "\t" + task.task_name )
+            print (str(task.id) + "\t" + task.task_name + "\t" + task.completion_time)
 
     def view_all_tasks(self):
         """View a list of all Doing tasks"""
