@@ -46,7 +46,7 @@ class Kanban():
         if todo_doing_task.all():
             for task in todo_doing_task:
                 start_time = datetime.now()
-                todo_doing = self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING")
+                todo_doing = self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "TODO")
                 if todo_doing.all():
                     todo_doing.update({"task_status": "DOING", "start_time": start_time})
                     self.session.commit()
