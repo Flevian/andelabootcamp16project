@@ -2,7 +2,7 @@
 """
 Kanban is an interactive command application.
 Usage:
-    Todo todo <taskname>
+    Todo add <taskname>
     Todo todo_list
     Todo doing <task_id>
     Todo done <task_id>
@@ -24,6 +24,7 @@ from docopt import docopt, DocoptExit
 from termcolor import colored
 from pyfiglet import Figlet
 from kanban import Kanban
+
 kanban = Kanban()
 
 
@@ -98,15 +99,15 @@ class ToDo(cmd.Cmd):
     file = None
 
     @docopt_cmd
-    def do_todo(self, arg):
-        """Usage: todo <taskname>"""
+    def do_add(self, arg):
+        """Usage: add <taskname>"""
         print(kanban.add_new_task(arg['<taskname>']))
 
     def do_todo_list(self, arg):
         """Usage: todo_list"""
         print(kanban.view_tasks_todo()) 
 
-    def do_todo_doing(self, arg):
+    def do_doing(self, arg):
     	"""Usage: doing <task_id>"""
     	print(kanban.move_todo_task_to_doing(arg)) 
     	
@@ -114,7 +115,7 @@ class ToDo(cmd.Cmd):
     	"""Usage: doing_list"""
     	print(kanban.view_tasks_doing())
 
-    def do_doing_done(self, arg):
+    def do_done(self, arg):
         """Usage: done <task_id>"""
         print(kanban.move_doing_task_to_done(arg))
 
@@ -129,15 +130,6 @@ class ToDo(cmd.Cmd):
     def do_sync_tasks(self,arg):
         """sync_tasks"""
         print(kanban.sync_tasks())         
-
-    @docopt_cmd
-    def do_serial(self, arg):
-        """Usage: serial <port> [--baud=<n>] [--timeout=<seconds>]
-Options:
-    --baud=<n>  Baudrate [default: 9600]
-        """
-
-        print(arg)
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
