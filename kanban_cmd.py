@@ -6,6 +6,7 @@ Usage:
     Todo todo_list
     Todo doing <task_id>
     Todo done <task_id>
+    Todo task <task_id>
     Todo doing_list
     Todo done_list
     Todo list_all
@@ -68,7 +69,7 @@ class ToDo(cmd.Cmd):
     todo_one = "Todo >> Input: task todo | view todo task list |"
     todo_two = "| move task from todo to doing | view doing task list"
     todo_three = "| move task from doing to done | view done task list"
-    todo_four = "| View all task | sync database to firebase"
+    todo_four = "| View all task | Task to drop"
     todo_five = "Type help or -h for a list of commands"
     print(colored("  " + "~" * 89,"white"))
     print(colored("  " + Figlet(font='slant').renderText('\t      TODO TASK MANAGER'),"white"))
@@ -105,34 +106,56 @@ class ToDo(cmd.Cmd):
 
     def do_todo_list(self, arg):
         """Usage: todo_list"""
+        print("\n")
         print(kanban.view_tasks_todo()) 
+        print("\n")
 
     def do_doing(self, arg):
-    	"""Usage: doing <task_id>"""
-    	print(kanban.move_todo_task_to_doing(arg)) 
-    	
+        """Usage: doing <task_id>"""
+        print("\n")
+        print(kanban.move_todo_task_to_doing(arg))
+        print("\n") 
+        
     def do_doing_list(self, arg):
-    	"""Usage: doing_list"""
-    	print(kanban.view_tasks_doing())
+        """Usage: doing_list"""
+        print("\n")
+        print(kanban.view_tasks_doing())
+        print("\n")
 
     def do_done(self, arg):
         """Usage: done <task_id>"""
+        print("\n")
         print(kanban.move_doing_task_to_done(arg))
+        print("\n")
 
     def do_done_list(self, arg):
         """Usage: done_list"""
+        print("\n")
         print(kanban.view_tasks_done())
+        print("\n")
 
     def do_list_all(self, arg):
         """Usage: list_all"""
+        print("\n")
         print(kanban.view_all_tasks())
+        print("\n")
 
-    def do_sync_tasks(self,arg):
-        """sync_tasks"""
-        print(kanban.sync_tasks())         
+    # @docopt_cmd   
+    # def do_task(self, arg):
+    #     """Usage: task <task_id>"""
+    #     print("\n")
+    #     print(kanban.delete_task(['<taskname>']))
+    #     print("\n")
+
+    # def do_sync_tasks(self,arg):
+    #     """sync_tasks"""
+    #     print("\n")
+    #     print(kanban.sync_tasks())
+    #     print("\n")         
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
+        print("\n")
 
         print('Good Bye!')
         exit()
