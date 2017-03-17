@@ -1,8 +1,9 @@
-from sqlalchemy import create_engine, DateTime
+from sqlalchemy import create_engine, DateTime, delete, update
 from sqlalchemy.orm import sessionmaker 
 from kanbanDb import KanbanDb, Base
 from tabulate import tabulate 
 from datetime import datetime
+from termcolor import colored
 #from firebase import firebase
 import json
 
@@ -25,7 +26,7 @@ class Kanban():
         self.session.add(new_task)
         try:
             self.session.commit()
-            return "Task added"
+            return "\nTask added\n"
         except:
             self.session.rollback()
             return "Task not added"
@@ -33,7 +34,7 @@ class Kanban():
     def view_tasks_todo(self):
         """View a list of all ToDo tasks"""
         todo_str = "Todo tasks list"
-        print(todo_str.center(29, "*"))
+        print(colored(todo_str.center(29, " "), "green"))
         todo_tasks = self.session.query(KanbanDb).filter(KanbanDb.task_status == "TODO")
         if todo_tasks.all():
             todo_list = []
@@ -66,7 +67,7 @@ class Kanban():
     def view_tasks_doing(self):
         """View a list of all Doing tasks"""
         doing_str = "Doing tasks list"
-        print(doing_str.center(29, "*"))
+        print(colored(doing_str.center(29, " "), "green"))
         doing_tasks = self.session.query(KanbanDb).filter(KanbanDb.task_status == "DOING")
         if doing_tasks.all():
             doing_task_list = []
@@ -83,7 +84,7 @@ class Kanban():
         if doing_task.all():
             for task in doing_task:
                 finish_time = str(datetime.now() - task.start_time)
-                doing_done = self.session.query(KanbanDb).filter(KanbanDb.id == task_id).filter(KanbanDb.task_status == "DOING")
+                doing_done = self.session.query(KanbanDb).filter(KanbanDb.id == task_id)
                 if doing_done.all():
                     doing_done.update({"task_status": "DONE", "task_duration": finish_time })
                     try:
@@ -100,7 +101,7 @@ class Kanban():
     def view_tasks_done(self):
         """View a list of all Done tasks"""
         done_str = "Done tasks list"
-        print(done_str.center(29, "*"))
+        print(colored(done_str.center(29, " "), "green"))
         done_tasks = self.session.query(KanbanDb).filter(KanbanDb.task_status == "DONE") # Get a object of all done tasks
         if done_tasks.all():
             done_task_list = []
@@ -111,10 +112,9 @@ class Kanban():
             return "No done task"
 
     def view_all_tasks(self):
-        """View a list of all Doing tasks"""
-        """View a list of all Done tasks"""
+        """View a list of all tasks"""
         done_str = "All tasks"
-        print(done_str.center(29, "*"))
+        print(colored(done_str.center(35, " "), "green"))
         todo_list2= []
         doing_list = []
         done_list =[]
@@ -131,7 +131,22 @@ class Kanban():
             all_task_dict = {"TODO" : todo_list2, "DOING" :  doing_list, "DONE" : done_list}
             return(tabulate(all_task_dict, headers = "keys", tablefmt = "fancy_grid"))
         else:
-            return "No tasks available"       
+            return "No tasks available"
+
+    def delete_task(self, task_id):
+        """Delete unwanted task"""
+        task_delete = self.session.query(KanbanDb).filter(KanbanDb.id == task_id)
+        if task_delete.all():
+            self.session.query(KanbanDb).filter(KanbanDb.id == task_id).delete()
+            try:
+                self.session.commit()
+                return "Task deleted"
+            except:
+                self.session.rollback()
+                return "Task not deleted"
+        else:
+            return "Task id povided does not exist"
+     
 
     # def sync_tasks(self):
     #     task_backup = self.session.query(KanbanDb).all()
