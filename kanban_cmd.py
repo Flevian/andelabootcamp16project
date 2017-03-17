@@ -6,7 +6,7 @@ Usage:
     Todo todo_list
     Todo doing <task_id>
     Todo done <task_id>
-    Todo task <task_id>
+    Todo delete <task_id>
     Todo doing_list
     Todo done_list
     Todo list_all
@@ -66,19 +66,19 @@ class ToDo(cmd.Cmd):
     main_menu = "main menu"
     main_option = "Menu Option 2"
     instruction = "Instructions:"
-    todo_one = "Todo >> Input: task todo | view todo task list |"
+    todo_one = "Todo >> Input: add a task | view todo task list |"
     todo_two = "| move task from todo to doing | view doing task list"
     todo_three = "| move task from doing to done | view done task list"
-    todo_four = "| View all task | Task to drop"
+    todo_four = "| View all task | delete a task"
     todo_five = "Type help or -h for a list of commands"
     print(colored("  " + "~" * 89,"white"))
     print(colored("  " + Figlet(font='slant').renderText('\t      TODO TASK MANAGER'),"white"))
     print(" " * 93)
     print(" " * 93)
     print(colored("  ~" + "~" * 89 + "~","blue"))
-    print(colored("  ~" + header.center(89, " ") + "~","white"))
+    print(colored("  ~" + header.center(89, " ") + "~","green"))
     print(colored("  ~" + "~" * 89 + "~","blue"))
-    print(colored("  ~" + instruction.ljust(89, " ") + "~","white"))
+    print(colored("  ~" + instruction.ljust(89, " ") + "~","yellow"))
     print(colored("  ~" + "~" * 89 + "~","white"))
     print(colored("  ~" + main_menu.center(89, " ") + "~","green"))
     print(colored("  ~" + "~" * 89 + "~","white"))
@@ -140,12 +140,11 @@ class ToDo(cmd.Cmd):
         print(kanban.view_all_tasks())
         print("\n")
 
-    # @docopt_cmd   
-    # def do_task(self, arg):
-    #     """Usage: task <task_id>"""
-    #     print("\n")
-    #     print(kanban.delete_task(['<taskname>']))
-    #     print("\n")
+    def do_delete(self, arg):
+        print("\n")
+        """Usage: delete <task_id>"""
+        print(kanban.delete_task(arg))
+        print("\n")        
 
     # def do_sync_tasks(self,arg):
     #     """sync_tasks"""
